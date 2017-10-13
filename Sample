@@ -1,0 +1,71 @@
+
+public static void main(String args[]) {
+
+		float fibo_50 = 0.5f;
+		float fibo_200 = 2f;
+
+		float fibo_61_8 = 0.618f;
+		float fibo_127_2 = 1.272f;
+
+		Sample sample = new Sample();
+		System.out.println("Sending for 50% & 200 %");
+		sample.generateBearishABCDPattern(100, 200, fibo_50, fibo_200);
+		System.out.println("\n");
+		sample.generateBullishABCDPattern(200, 100, fibo_50, fibo_200);
+
+		System.out.println("\n\n");
+
+		System.out.println("Sending for 61.8% & 127.2% %");
+		sample.generateBearishABCDPattern(100, 200, fibo_61_8, fibo_127_2);
+		System.out.println("\n");
+		sample.generateBullishABCDPattern(200, 100, fibo_61_8, fibo_127_2);
+
+	}
+  
+public void generateBearishABCDPattern(float A, float B, float BCRetracement, float CDRetracement) {
+		System.out.println("generateBearishABCDPattern(A, B, BCRetracement, CDRetracement) initiated");
+
+		System.out.println("A : " + A);
+		System.out.println("B : " + B);
+
+		float C = B - A * BCRetracement;
+		System.out.println("C : " + C);
+
+		float BC = B - C;
+		System.out.println("BC : " + BC);
+
+		float D = C + BC * CDRetracement;
+		System.out.println("D : " + D);
+
+		float CD = D - C;
+		System.out.println("CD : " + CD);
+
+		float target = D - CD;
+		System.out.println("Target : " + target);
+		System.out.println("generateBearishABCDPattern(A, B, BCRetracement, CDRetracement) completed");
+
+	}
+
+	public void generateBullishABCDPattern(float A, float B, float BCRetracement, float CDRetracement) {
+		System.out.println("generateBullishABCDPattern(A, B, BCRetracement, CDRetracement) initiated");
+
+		System.out.println("A : " + A);
+		System.out.println("B : " + B);
+
+		float BC = (A - B) * BCRetracement;
+		System.out.println("BC : " + BC);
+
+		float C = B + BC;
+		System.out.println("C : " + C);
+
+		float D = C - (BC * CDRetracement);
+		System.out.println("D : " + D);
+
+		float CD = C - D;
+		System.out.println("CD : " + CD);
+
+		float target = D + CD;
+		System.out.println("Target : " + target);
+		System.out.println("generateBullishABCDPattern(A, B, BCRetracement, CDRetracement) completed");
+
+	}
