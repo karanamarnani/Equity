@@ -1,0 +1,140 @@
+
+public class EquityArchiveData {
+
+	private String symbol;
+	private String series;
+	private String date;
+	private String previousClose;
+	private String openPrice;
+	private String highPrice;
+	private String lowPrice;
+	private String lastPrice;
+	private String closePrice;
+	private String averagePrice;
+	private String totalTradedQuatity;
+	private String turnover;
+	private String noOfTrade;
+	private String deliverableQty;
+	private String percentDeliveryQtyToTradedQty;
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+	public String getSeries() {
+		return series;
+	}
+
+	public void setSeries(String series) {
+		this.series = series;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getPreviousClose() {
+		return previousClose;
+	}
+
+	public void setPreviousClose(String previousClose) {
+		this.previousClose = previousClose;
+	}
+
+	public String getOpenPrice() {
+		return openPrice;
+	}
+
+	public void setOpenPrice(String openPrice) {
+		this.openPrice = openPrice;
+	}
+
+	public String getHighPrice() {
+		return highPrice;
+	}
+
+	public void setHighPrice(String highPrice) {
+		this.highPrice = highPrice;
+	}
+
+	public String getLowPrice() {
+		return lowPrice;
+	}
+
+	public void setLowPrice(String lowPrice) {
+		this.lowPrice = lowPrice;
+	}
+
+	public String getLastPrice() {
+		return lastPrice;
+	}
+
+	public void setLastPrice(String lastPrice) {
+		this.lastPrice = lastPrice;
+	}
+
+	public String getClosePrice() {
+		return closePrice;
+	}
+
+	public void setClosePrice(String closePrice) {
+		this.closePrice = closePrice;
+	}
+
+	public String getAveragePrice() {
+		return averagePrice;
+	}
+
+	public void setAveragePrice(String averagePrice) {
+		this.averagePrice = averagePrice;
+	}
+
+	public String getTotalTradedQuatity() {
+		return totalTradedQuatity;
+	}
+
+	public void setTotalTradedQuatity(String totalTradedQuatity) {
+		this.totalTradedQuatity = totalTradedQuatity;
+	}
+
+	public String getTurnover() {
+		return turnover;
+	}
+
+	public void setTurnover(String turnover) {
+		this.turnover = turnover;
+	}
+
+	public String getNoOfTrade() {
+		return noOfTrade;
+	}
+
+	public void setNoOfTrade(String noOfTrade) {
+		this.noOfTrade = noOfTrade;
+	}
+
+	public String getDeliverableQty() {
+		return deliverableQty;
+	}
+
+	public void setDeliverableQty(String deliverableQty) {
+		this.deliverableQty = deliverableQty;
+	}
+
+	public String getPercentDeliveryQtyToTradedQty() {
+		return percentDeliveryQtyToTradedQty;
+	}
+
+	public void setPercentDeliveryQtyToTradedQty(String percentDeliveryQtyToTradedQty) {
+		this.percentDeliveryQtyToTradedQty = percentDeliveryQtyToTradedQty;
+	}
+
+}
