@@ -1,0 +1,39 @@
+/**
+ * 
+ */
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+
+public class WebService {
+
+	public static void main(String[] args) throws Exception {
+		System.out.println("**********************");
+//		URL test = new URL("http://www.thomas-bayer.com/sqlrest/CUSTOMER/");
+//		URL test = new URL("https://www.google.com");
+//		URL test = new URL("https://www.niftytrader.in/stock_oi/get_stock_oi.php/?id=NIFTY");
+		URL test = new URL("https://www.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=3month&fromDate=&toDate=&dataType=PRICEVOLUMEDELIVERABLE");
+		System.out.println("test");
+		System.setProperty("java.net.useSystemProxies", "true");
+		System.setProperty("https.proxyHost", "oproxy.fg.rbc.com");
+		System.setProperty("https.proxyPort", "8080");
+		System.setProperty("http.proxyPort", "8080");
+		/*
+		 * Authenticator authenticator = new Authenticator() { public
+		 * PasswordAuthentication getPasswordAuthentication() { return (new
+		 * PasswordAuthentication("312959471","Sep@2015".toCharArray())); } };
+		 * Authenticator.setDefault(authenticator);
+		 */
+		URLConnection yc = test.openConnection();
+		System.out.println("Connection Established");
+		System.out.println(test.getHost());
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+		String inputLine;
+		while ((inputLine = in.readLine()) != null)
+			System.out.println(inputLine);
+		in.close();
+	}
+}
