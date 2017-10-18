@@ -1,40 +1,43 @@
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
-public static void main(String args[]) {
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 
-		float fibo_50 = 0.5f;
-		float fibo_200 = 2f;
+public class Sample {
 
-		float fibo_61_8 = 0.618f;
-		float fibo_127_2 = 1.272f;
-
-		Sample sample = new Sample();
-		System.out.println("Sending for 50% & 200 %");
-		sample.generateBearishABCDPattern(100, 200, fibo_50, fibo_200);
-		System.out.println("\n");
-		sample.generateBullishABCDPattern(200, 100, fibo_50, fibo_200);
-
-		System.out.println("\n\n");
-
-		System.out.println("Sending for 61.8% & 127.2% %");
-		sample.generateBearishABCDPattern(100, 200, fibo_61_8, fibo_127_2);
-		System.out.println("\n");
-		sample.generateBullishABCDPattern(200, 100, fibo_61_8, fibo_127_2);
-
-	}
-  
-public void generateBearishABCDPattern(float A, float B, float BCRetracement, float CDRetracement) {
+	public void generateBearishABCDPattern(float A, float B, float BCRetracement, float CDRetracement) {
 		System.out.println("generateBearishABCDPattern(A, B, BCRetracement, CDRetracement) initiated");
 
 		System.out.println("A : " + A);
 		System.out.println("B : " + B);
 
 		float C = B - A * BCRetracement;
+		// float C = B - (A * BCRetracement) / 100;
 		System.out.println("C : " + C);
 
 		float BC = B - C;
 		System.out.println("BC : " + BC);
 
 		float D = C + BC * CDRetracement;
+		// float D = C + (BC * CDRetracement) / 100;
 		System.out.println("D : " + D);
 
 		float CD = D - C;
@@ -53,12 +56,14 @@ public void generateBearishABCDPattern(float A, float B, float BCRetracement, fl
 		System.out.println("B : " + B);
 
 		float BC = (A - B) * BCRetracement;
+		// float BC = ((A - B) * BCRetracement) / 100;
 		System.out.println("BC : " + BC);
 
 		float C = B + BC;
 		System.out.println("C : " + C);
 
 		float D = C - (BC * CDRetracement);
+		// float D = C - ((BC * CDRetracement) / 100);
 		System.out.println("D : " + D);
 
 		float CD = C - D;
@@ -69,30 +74,486 @@ public void generateBearishABCDPattern(float A, float B, float BCRetracement, fl
 		System.out.println("generateBullishABCDPattern(A, B, BCRetracement, CDRetracement) completed");
 
 	}
-	
-	public static void main(String[] args) throws Exception {
-		System.out.println("**********************");
-//		URL test = new URL("http://www.thomas-bayer.com/sqlrest/CUSTOMER/");
-//		URL test = new URL("https://www.google.com");
-		URL test = new URL("https://www.niftytrader.in/stock_oi/get_stock_oi.php/?id=NIFTY");
-		System.out.println("test");
-		System.setProperty("java.net.useSystemProxies", "true");
-		System.setProperty("https.proxyHost", "oproxy.fg.rbc.com");
-		System.setProperty("https.proxyPort", "8080");
-		System.setProperty("http.proxyPort", "8080");
-		/*
-		 * Authenticator authenticator = new Authenticator() { public
-		 * PasswordAuthentication getPasswordAuthentication() { return (new
-		 * PasswordAuthentication("312959471","Sep@2015".toCharArray())); } };
-		 * Authenticator.setDefault(authenticator);
-		 */
-		URLConnection yc = test.openConnection();
-		System.out.println("Connection Established");
-		System.out.println(test.getHost());
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-		String inputLine;
-		while ((inputLine = in.readLine()) != null)
-			System.out.println(inputLine);
-		in.close();
+	public String getEquityArchiveData() {
+		System.out.println("readJsonFromUrl(url) initiated");
+
+		BufferedReader in = null;
+
+		String url = this.getArchiveDataUrl("SBIN", "EQ", "3month");
+		System.out.println("url : " + url);
+
+		try {
+
+			// URL urlObject = new URL(
+			// "https://www.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=3month&fromDate=&toDate=&dataType=PRICEVOLUMEDELIVERABLE");
+
+			URL urlObject = new URL(url);
+
+			System.out.println("Url Object created.");
+
+			System.setProperty("java.net.useSystemProxies", "true");
+			System.setProperty("https.proxyHost", "oproxy.fg.rbc.com");
+			System.setProperty("https.proxyPort", "8080");
+			System.setProperty("http.proxyPort", "8080");
+			/*
+			 * Authenticator authenticator = new Authenticator() { public
+			 * PasswordAuthentication getPasswordAuthentication() { return (new
+			 * PasswordAuthentication("312959471","Sep@2015".toCharArray())); }
+			 * }; Authenticator.setDefault(authenticator);
+			 */
+			URLConnection urlConnection = urlObject.openConnection();
+			System.out.println("Connection Established");
+			System.out.println(urlObject.getHost());
+
+			in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+			String inputLine;
+			StringBuilder xml = new StringBuilder();
+			while ((inputLine = in.readLine()) != null) {
+				xml.append(inputLine);
+			}
+			// System.out.println(xml);
+
+			SAXReader reader = new SAXReader();
+			try {
+				Document document = reader.read(urlObject);
+				System.out.println(document);
+
+			} catch (DocumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (MalformedURLException e) {
+			System.out.println("Error :::::::::::::: MalformedURLException : " + e);
+		} catch (IOException e) {
+			System.out.println("Error :::::::::::::: IOException : " + e);
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+
+				System.out.println("Error :::::::::::::: IOException : " + e);
+
+			}
+		}
+		return null;
 	}
+
+	public String getArchiveDataUrl(String symbol, String series, String dateRange) {
+
+		StringBuffer sb = new StringBuffer(
+				"https://www.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?symbol=");
+		sb.append(symbol);
+		sb.append("&segmentLink=3&symbolCount=1&series=");
+		sb.append(series);
+		sb.append("&dateRange=");
+		sb.append(dateRange);
+		sb.append("&fromDate=&toDate=&dataType=PRICEVOLUMEDELIVERABLE");
+
+		return sb.toString();
+	}
+
+	// public static JSONObject readJsonFromUrl(String url) throws IOException,
+	// JSONException {
+	public static void readJsonFromUrl(String url) throws IOException {
+		System.out.println("readJsonFromUrl(url) initiated");
+		InputStream is = new URL(url).openStream();
+		try {
+
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+			String jsonText = readAll(rd);
+			System.out.println("jsonText : " + jsonText);
+			// JSONObject json = new JSONObject(jsonText);
+			// return json;
+		} finally {
+			is.close();
+		}
+		System.out.println("readJsonFromUrl(url) completed");
+	}
+
+	private static String readAll(Reader rd) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		int cp;
+		while ((cp = rd.read()) != -1) {
+			sb.append((char) cp);
+		}
+		return sb.toString();
+	}
+
+	public void sendReq() {
+		// HttpClient httpClient = HttpClients.createDefault();
+		// PostMethod postMethod = new PostMethod(url);
+		// postMethod.addParameter("Email", email);
+		// postMethod.addParameter("fname", fname);
+		// try {
+		// httpClient.executeMethod(postMethod);
+		// } catch (HttpException e) {
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		//
+		// if (postMethod.getStatusCode() == HttpStatus.SC_OK) {
+		// String resp = postMethod.getResponseBodyAsString();
+		// } else {
+		// //...postMethod.getStatusLine();
+		// }
+
+		// String str =
+		// "https://www.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=3month&fromDate=&toDate=&dataType=PRICEVOLUMEDELIVERABLE";
+		// String str =
+		// "https://www.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp";
+		// ArrayList<NameValuePair> postParameters = new
+		// ArrayList<NameValuePair>();
+		// postParameters.add(new BasicNameValuePair("symbol", "SBIN"));
+		// postParameters.add(new BasicNameValuePair("segmentLink", "3"));
+		// postParameters.add(new BasicNameValuePair("symbolCount", "1"));
+		// postParameters.add(new BasicNameValuePair("series", "EQ"));
+		// postParameters.add(new BasicNameValuePair("dateRange", "3month"));
+		// postParameters.add(new BasicNameValuePair("fromDate", ""));
+		// postParameters.add(new BasicNameValuePair("toDate", ""));
+		// postParameters.add(new BasicNameValuePair("dataType",
+		// "PRICEVOLUMEDELIVERABLE"));
+		//
+		// HttpPost httpPost = new HttpPost(str);
+		// System.out.println("httpPost : " + httpPost);
+		// try {
+		// httpPost.setEntity(new UrlEncodedFormEntity(postParameters,
+		// "UTF-8"));
+		//
+		//
+		// HttpClient httpclient = new DefaultHttpClient();
+		// System.out.println("httpclient : " + httpclient);
+		//
+		// System.setProperty("java.net.useSystemProxies", "true");
+		// System.setProperty("https.proxyHost", "oproxy.fg.rbc.com");
+		// System.setProperty("https.proxyPort", "8080");
+		// System.setProperty("http.proxyPort", "8080");
+		//
+		//
+		// HttpResponse response = httpclient.execute(httpPost);
+		//
+		// System.out.println("response : " + response);
+		//
+		// } catch (UnsupportedEncodingException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		// URLConnection urlConnection = urlObject.openConnection();
+		// System.out.println("Connection Established");
+		// System.out.println(urlObject.getHost());
+		//
+		// in = new BufferedReader(new
+		// InputStreamReader(urlConnection.getInputStream()));
+		//
+		// String inputLine;
+		// StringBuilder xml = new StringBuilder();
+		// while ((inputLine = in.readLine()) != null) {
+		// xml.append(inputLine);
+		// }
+
+		URL myurl;
+		try {
+			myurl = new URL("https://www.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp");
+
+			System.setProperty("java.net.useSystemProxies", "true");
+			System.setProperty("https.proxyHost", "oproxy.fg.rbc.com");
+			System.setProperty("https.proxyPort", "8080");
+			System.setProperty("http.proxyPort", "8080");
+
+			String query = "symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=3month&fromDate=&toDate=&dataType=PRICEVOLUMEDELIVERABLE";
+			HttpURLConnection con = (HttpURLConnection) myurl.openConnection();
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-length", String.valueOf(query.length()));
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			con.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0;Windows98;DigExt)");
+			con.setDoOutput(true);
+			con.setDoInput(true);
+
+			DataOutputStream output = new DataOutputStream(con.getOutputStream());
+
+			output.writeBytes(query);
+
+			output.close();
+
+			DataInputStream input = new DataInputStream(con.getInputStream());
+
+			for (int c = input.read(); c != -1; c = input.read())
+				System.out.print((char) c);
+			input.close();
+
+			System.out.println("Resp Code:" + con.getResponseCode());
+			System.out.println("Resp Message:" + con.getResponseMessage());
+
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private List<EquityArchiveData> readEquityArchiveDataFromCSV(String fileName) {
+
+		List<EquityArchiveData> equityArchiveDataList = new ArrayList<>();
+		Path pathToFile = Paths.get(fileName);
+
+		try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII)) {
+
+			String line = br.readLine();
+
+			while (line != null) {
+
+				String[] attributes = line.split(",");
+				EquityArchiveData equityArchiveData = this.createEquityArchiveData(attributes);
+				equityArchiveDataList.add(equityArchiveData);
+				line = br.readLine();
+			}
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		return equityArchiveDataList;
+
+	}
+
+	private EquityArchiveData createEquityArchiveData(String[] attributes) {
+
+		EquityArchiveData equityArchiveData = new EquityArchiveData();
+		equityArchiveData.setSymbol(attributes[0]);
+		equityArchiveData.setSeries(attributes[1]);
+		equityArchiveData.setDate(attributes[2]);
+		equityArchiveData.setPreviousClose(attributes[3]);
+		equityArchiveData.setOpenPrice(attributes[4]);
+		equityArchiveData.setHighPrice(attributes[5]);
+		equityArchiveData.setLowPrice(attributes[6]);
+		equityArchiveData.setLastPrice(attributes[7]);
+		equityArchiveData.setClosePrice(attributes[8]);
+		equityArchiveData.setAveragePrice(attributes[9]);
+		equityArchiveData.setTotalTradedQuatity(attributes[10]);
+		equityArchiveData.setTurnover(attributes[11]);
+		equityArchiveData.setNoOfTrade(attributes[12]);
+		equityArchiveData.setDeliverableQty(attributes[13]);
+		equityArchiveData.setPercentDeliveryQtyToTradedQty(attributes[14]);
+		return equityArchiveData;
+
+	}
+
+	public static void main(String args[]) {
+
+		Float fibo_38_20 = new Float(0.382);
+		float fibo_224 = 2.24f;
+		float fibo_261_80 = 2.618f;
+
+		float fibo_50 = 0.5f;
+		float fibo_200 = 2f;
+
+		float fibo_61_8 = 0.618f;
+		float fibo_127_2 = 1.272f;
+
+		float fibo_70_70 = 0.707f;
+		float fibo_141 = 1.41f;
+
+		float fibo_78_60 = 0.786f;
+		float fibo_127_20 = 1.272f;
+
+		float fibo_88_60 = 0.886f;
+		float fibo_113 = 1.13f;
+
+		ABCDPatternRetracements abcdPatternRetracements = new ABCDPatternRetracements();
+		ArrayList<ABCDPatternRetracements> retracementList = abcdPatternRetracements.getRetracementList();
+
+		Sample sample = new Sample();
+
+		List<EquityArchiveData> equityArchiveDataList = sample.readEquityArchiveDataFromCSV(
+				"C:\\Users\\315737882\\Downloads\\19-07-2017-TO-16-10-2017JSWENERGYEQN.csv");
+
+		int size;
+
+		if (equityArchiveDataList != null && (size = equityArchiveDataList.size()) > 0) {
+
+			for (int level1 = 1; level1 < size; level1++) {
+
+				EquityArchiveData equityArchiveData1 = equityArchiveDataList.get(level1);
+
+				String lowPriceLevel1 = equityArchiveData1.getLowPrice();
+				// System.out.println("lowPriceLevel1 : " + lowPriceLevel1);
+				Float aPoint = Float.valueOf(lowPriceLevel1.substring(1, lowPriceLevel1.length() - 1).trim());
+
+				String highPriceLevel1 = equityArchiveData1.getHighPrice();
+				// System.out.println("highPriceLevel1 : " + highPriceLevel1);
+				Float b1 = Float.valueOf(highPriceLevel1.substring(1, highPriceLevel1.length() - 1).trim());
+
+				leveltwo: for (int level2 = level1 + 1; level2 < size; level2++) {
+
+					EquityArchiveData equityArchiveData2 = equityArchiveDataList.get(level2);
+
+					String lowPriceLevel2 = equityArchiveData2.getLowPrice();
+					Float a2 = Float.valueOf(lowPriceLevel2.substring(1, lowPriceLevel2.length() - 1).trim());
+
+					String highPriceLevel2 = equityArchiveData2.getHighPrice().trim();
+					Float bPoint = Float.valueOf(highPriceLevel2.substring(1, highPriceLevel2.length() - 1).trim());
+
+					if (aPoint < a2 && b1 < bPoint) {
+
+						System.out.println("Condition matched for matching C point");
+						System.out.println("A1 : " + aPoint + "\tB1 : " + b1);
+						System.out.println("A2 : " + a2 + "\tB2 : " + bPoint);
+
+						for (ABCDPatternRetracements retracement : retracementList) {
+
+							Float bCRetracement = retracement.getBCRetracement();
+							Float cDRetracement = retracement.getCDRetracement();
+
+							Float expectedCPoint = sample.getExpectedCPoint(aPoint, bPoint, bCRetracement);
+
+							for (int level3 = level2 + 1; level3 < size; level3++) {
+
+								EquityArchiveData equityArchiveData3 = equityArchiveDataList.get(level3);
+
+								String lowPriceLevel3 = equityArchiveData3.getLowPrice();
+								Float cPoint = Float
+										.valueOf(lowPriceLevel3.substring(1, lowPriceLevel3.length() - 1).trim());
+
+								if (aPoint < cPoint) {
+
+									Float temp = cPoint * 0.005f;
+									if ((expectedCPoint <= cPoint + temp) || (expectedCPoint >= cPoint - temp)) {
+
+										int level4 = level3 + (level2 - level1);
+
+										if (level4 < size) {
+
+											Float expectedDPoint = sample.getExpectedDPoint(bPoint, cPoint,
+													cDRetracement);
+
+											EquityArchiveData equityArchiveData4 = equityArchiveDataList.get(level4);
+
+											String highPriceLevel4 = equityArchiveData4.getHighPrice().trim();
+											Float dPoint = Float.valueOf(
+													highPriceLevel4.substring(1, highPriceLevel4.length() - 1).trim());
+
+											temp = dPoint * 0.005f;
+
+											if ((expectedDPoint <= dPoint + temp)
+													|| (expectedDPoint >= dPoint - temp)) {
+
+												System.out.println("Bearish ABCD pattern formed at :");
+												System.out.println("A-Point : " + aPoint + "\tB-Point : " + bPoint
+														+ "\tC-Point : " + cPoint + "\tD-Point : " + dPoint);
+
+//												sample.compareBearishABCD();
+											}
+										}
+
+									}
+
+								} else {
+									break leveltwo;
+								}
+
+							}
+
+						}
+
+					} else {
+						break;
+					}
+
+				}
+				// sample.generateBearishABCDPattern(Float.valueOf(lowPriceLevel1),
+				// Float.valueOf(highPriceLevel1),
+				// fibo_38_20, fibo_224);
+
+			}
+
+		}
+
+		// System.out.println("Staring for 38.20% & 224%");
+		// sample.generateBearishABCDPattern(100, 200, fibo_38_20, fibo_224);
+		// System.out.println("\n");
+		// sample.generateBullishABCDPattern(200, 100, fibo_38_20, fibo_224);
+		// System.out.println("Completed for 38.20% & 224%");
+		//
+		// System.out.println("Staring for 38.20% & 261.80%");
+		// sample.generateBearishABCDPattern(100, 200, fibo_38_20, fibo_261_80);
+		// System.out.println("\n");
+		// sample.generateBullishABCDPattern(200, 100, fibo_38_20, fibo_261_80);
+		// System.out.println("Completed for 38.20% & 261.80%");
+		//
+		// System.out.println("Staring for 50% & 200%");
+		// sample.generateBearishABCDPattern(100, 200, fibo_50, fibo_200);
+		// System.out.println("\n");
+		// sample.generateBullishABCDPattern(200, 100, fibo_50, fibo_200);
+		// System.out.println("Completed for 50% & 200%");
+		//
+		// System.out.println("\n\n");
+		//
+		// System.out.println("Sending for 61.8% & 127.2%");
+		// sample.generateBearishABCDPattern(100, 200, fibo_61_8, fibo_127_2);
+		// System.out.println("\n");
+		// sample.generateBullishABCDPattern(200, 100, fibo_61_8, fibo_127_2);
+		// System.out.println("Completed for 61.8% & 127.2%");
+		//
+		// System.out.println("\n\n");
+		//
+		// System.out.println("Sending for 70.70% & 141%");
+		// sample.generateBearishABCDPattern(100, 200, fibo_70_70, fibo_141);
+		// System.out.println("\n");
+		// sample.generateBullishABCDPattern(200, 100, fibo_70_70, fibo_141);
+		// System.out.println("Completed for 70.70% & 141%");
+		//
+		// System.out.println("\n\n");
+		//
+		// System.out.println("Sending for 78.60% & 127.20%");
+		// sample.generateBearishABCDPattern(100, 200, fibo_78_60, fibo_127_20);
+		// System.out.println("\n");
+		// sample.generateBullishABCDPattern(200, 100, fibo_78_60, fibo_127_20);
+		// System.out.println("Completed for 78.60% & 127.20%");
+		//
+		// System.out.println("\n\n");
+		//
+		// System.out.println("Sending for 88.60% & 113%");
+		// sample.generateBearishABCDPattern(100, 200, fibo_88_60, fibo_113);
+		// System.out.println("\n");
+		// sample.generateBullishABCDPattern(200, 100, fibo_88_60, fibo_113);
+		// System.out.println("Completed for 88.60% & 113%");
+
+		// String str ="&lt;xsl:include
+		// href='/custom/iwov-resources/cb/xsl/common/text-area-shareable.xsl'/&gt;";
+		// Pattern p =
+		// Pattern.compile("(\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",Pattern.CASE_INSENSITIVE);
+		// Matcher m = p.matcher(str);
+		// boolean result = m.find();
+		// if (result) {
+		// String url=m.group(1);
+		// System.out.println("url : " + url);
+		// }
+
+		// try {
+		// readJsonFromUrl("https://www.niftytrader.in/stock_oi/get_stock_oi.php/?id=NIFTY");
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+	}
+
+	private Float getExpectedDPoint(Float bPoint, Float cPoint, Float cDRetracement) {
+		float BC = bPoint - cPoint;
+//		System.out.println("BC : " + BC);
+		return cPoint + BC * cDRetracement;
+	}
+
+	private Float getExpectedCPoint(Float a, Float b, Float bCRetracement) {
+		return b - a * bCRetracement;
+	}
+
+}
