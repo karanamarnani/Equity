@@ -1,0 +1,70 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
+public class Harmonics {
+
+	private static final String FILE_PATH = "C:\\Users\\315737882\\Downloads\\19-07-2017-TO-16-10-2017JSWENERGYEQN.csv";
+
+	public static void main(String args[]) {
+
+		Harmonics harmonics = new Harmonics();
+		ArrayList<EquityArchiveData> equityArchiveDataList = harmonics.readEquityArchiveDataFromCSV(FILE_PATH);
+		if (equityArchiveDataList != null && equityArchiveDataList.size() > 0) {
+			new ABCDPattern(equityArchiveDataList);
+		} else {
+			System.out.println("Couldn't read provideed file path : " + FILE_PATH);
+		}
+
+	}
+
+	private ArrayList<EquityArchiveData> readEquityArchiveDataFromCSV(String fileName) {
+
+		ArrayList<EquityArchiveData> equityArchiveDataList = new ArrayList<EquityArchiveData>();
+		Path pathToFile = Paths.get(fileName);
+
+		try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII)) {
+
+			String line = br.readLine();
+
+			while (line != null) {
+
+				String[] attributes = line.split(",");
+				EquityArchiveData equityArchiveData = this.createEquityArchiveData(attributes);
+				equityArchiveDataList.add(equityArchiveData);
+				line = br.readLine();
+			}
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		return equityArchiveDataList;
+
+	}
+
+	private EquityArchiveData createEquityArchiveData(String[] attributes) {
+
+		EquityArchiveData equityArchiveData = new EquityArchiveData();
+		equityArchiveData.setSymbol(attributes[0]);
+		equityArchiveData.setSeries(attributes[1]);
+		equityArchiveData.setDate(attributes[2]);
+		equityArchiveData.setPreviousClose(attributes[3]);
+		equityArchiveData.setOpenPrice(attributes[4]);
+		equityArchiveData.setHighPrice(attributes[5]);
+		equityArchiveData.setLowPrice(attributes[6]);
+		equityArchiveData.setLastPrice(attributes[7]);
+		equityArchiveData.setClosePrice(attributes[8]);
+		equityArchiveData.setAveragePrice(attributes[9]);
+		equityArchiveData.setTotalTradedQuatity(attributes[10]);
+		equityArchiveData.setTurnover(attributes[11]);
+		equityArchiveData.setNoOfTrade(attributes[12]);
+		equityArchiveData.setDeliverableQty(attributes[13]);
+		equityArchiveData.setPercentDeliveryQtyToTradedQty(attributes[14]);
+		return equityArchiveData;
+
+	}
+}
