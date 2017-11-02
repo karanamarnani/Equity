@@ -1,0 +1,136 @@
+import java.util.ArrayList;
+
+public class ABCDPattern {
+
+	public static final int CANDLE_COUNT_FOR_A_POINT_VALIDATION = 10;
+	// private ArrayList<ABCDPatternRetracementLevels> retracementList = null;
+	// private ArrayList<EquityArchiveData> equityArchiveDataList = null;
+
+	public ABCDPattern(ArrayList<EquityArchiveData> equityArchiveDataList) {
+		// this.init();
+		// this.equityArchiveDataList = equityArchiveDataList;
+		ArrayList<ABCDPatternRetracementLevels> retracementList = new ABCDPatternRetracementLevels()
+				.getRetracementList();
+		this.scanForBearishABCDPattern(equityArchiveDataList, retracementList);
+	}
+
+	private void scanForBearishABCDPattern(ArrayList<EquityArchiveData> equityArchiveDataList,
+			ArrayList<ABCDPatternRetracementLevels> retracementList) {
+
+		int count = 0;
+		int size;
+
+		System.out.println("Scanning started");
+
+		if (equityArchiveDataList != null && (size = equityArchiveDataList.size()) > 0) {
+
+			//Starting levels from 
+			for (int level1 = 1; level1 < size; level1++) {
+
+				EquityArchiveData equityArchiveData1 = equityArchiveDataList.get(level1);
+
+				String lowPriceLevel1 = equityArchiveData1.getLowPrice();
+				// System.out.println("lowPriceLevel1 : " + lowPriceLevel1);
+				Float aPoint = Float.valueOf(lowPriceLevel1.substring(1, lowPriceLevel1.length() - 1).trim());
+
+				equityArchiveDataList.subList(arg0, arg1);
+				
+				this.validateAPoint(equityArchiveDataList, aPoint);
+				// String highPriceLevel1 = equityArchiveData1.getHighPrice();
+				// System.out.println("highPriceLevel1 : " + highPriceLevel1);
+				// Float b1 = Float.valueOf(highPriceLevel1.substring(1,
+				// highPriceLevel1.length() - 1).trim());
+
+				leveltwo: for (int level2 = level1 + 1; level2 < size; level2++) {
+
+					EquityArchiveData equityArchiveData2 = equityArchiveDataList.get(level2);
+
+					String lowPriceLevel2 = equityArchiveData2.getLowPrice();
+					Float a2 = Float.valueOf(lowPriceLevel2.substring(1, lowPriceLevel2.length() - 1).trim());
+
+					String highPriceLevel2 = equityArchiveData2.getHighPrice().trim();
+					Float bPoint = Float.valueOf(highPriceLevel2.substring(1, highPriceLevel2.length() - 1).trim());
+
+					// if (aPoint < a2 && b1 < bPoint) {
+					if (aPoint < a2) {
+
+						for (ABCDPatternRetracementLevels retracement : retracementList) {
+
+							Float bCRetracement = retracement.getBCRetracement();
+							Float cDRetracement = retracement.getCDRetracement();
+
+							Float expectedCPoint = retracement.getExpectedCPoint(aPoint, bPoint, bCRetracement);
+
+							for (int level3 = level2 + 1; level3 < size; level3++) {
+
+								EquityArchiveData equityArchiveData3 = equityArchiveDataList.get(level3);
+
+								String lowPriceLevel3 = equityArchiveData3.getLowPrice();
+								Float cPoint = Float
+										.valueOf(lowPriceLevel3.substring(1, lowPriceLevel3.length() - 1).trim());
+
+								if (aPoint < cPoint) {
+
+									Float temp = cPoint * 0.001f;
+									if ((expectedCPoint <= cPoint + temp) || (expectedCPoint >= cPoint - temp)) {
+										// if (expectedCPoint == cPoint) {
+										int level4 = level3 + (level2 - level1);
+
+										if (level4 < size) {
+
+											Float expectedDPoint = retracement.getExpectedDPoint(bPoint, cPoint,
+													cDRetracement);
+
+											EquityArchiveData equityArchiveData4 = equityArchiveDataList.get(level4);
+
+											String highPriceLevel4 = equityArchiveData4.getHighPrice().trim();
+											Float dPoint = Float.valueOf(
+													highPriceLevel4.substring(1, highPriceLevel4.length() - 1).trim());
+
+											temp = dPoint * 0.005f;
+
+											if ((expectedDPoint <= dPoint + temp)
+													|| (expectedDPoint >= dPoint - temp)) {
+
+												count++;
+												// System.out.println("Bearish
+												// ABCD pattern formed at :");
+												System.out.println("A-Point : " + aPoint + "\tB-Point : " + bPoint
+														+ "\tC-Point : " + cPoint + "\tD-Point : " + dPoint);
+
+												// sample.compareBearishABCD();
+											}
+										}
+
+									}
+
+								} else {
+									break leveltwo;
+								}
+
+							}
+
+						}
+
+					} else {
+						break;
+					}
+
+				}
+				// sample.generateBearishABCDPattern(Float.valueOf(lowPriceLevel1),
+				// Float.valueOf(highPriceLevel1),
+				// fibo_38_20, fibo_224);
+
+			}
+
+		}
+		System.out.println("Scanning completed : " + count);
+
+	}
+
+	private void validateAPoint(ArrayList<EquityArchiveData> equityArchiveDataList, Float aPoint) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
