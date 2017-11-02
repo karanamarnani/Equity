@@ -1,0 +1,59 @@
+import java.util.ArrayList;
+
+public class ABCDPatternRetracementLevels {
+
+	private Float BCRetracement = null;
+	private Float CDRetracement = null;
+	private ArrayList<ABCDPatternRetracementLevels> retracementList = null;
+
+	public ABCDPatternRetracementLevels() {
+		this.initRetracementList();
+	}
+
+	public ABCDPatternRetracementLevels(Float bCRetracement, Float cDRetracement) {
+		this.BCRetracement = bCRetracement;
+		this.CDRetracement = cDRetracement;
+	}
+
+	private void initRetracementList() {
+
+		this.retracementList = new ArrayList<>();
+		this.retracementList.add(new ABCDPatternRetracementLevels(0.382f, 2.24f));
+		this.retracementList.add(new ABCDPatternRetracementLevels(0.382f, 2.618f));
+		this.retracementList.add(new ABCDPatternRetracementLevels(0.5f, 2f));
+		this.retracementList.add(new ABCDPatternRetracementLevels(0.618f, 1.272f));
+		this.retracementList.add(new ABCDPatternRetracementLevels(0.707f, 1.41f));
+		this.retracementList.add(new ABCDPatternRetracementLevels(0.786f, 1.272f));
+		this.retracementList.add(new ABCDPatternRetracementLevels(0.886f, 1.13f));
+
+	}
+
+	public Float getBCRetracement() {
+		return this.BCRetracement;
+	}
+
+	public void setBCRetracement(Float bCRetracement) {
+		this.BCRetracement = bCRetracement;
+	}
+
+	public Float getCDRetracement() {
+		return this.CDRetracement;
+	}
+
+	public void setCDRetracement(Float cDRetracement) {
+		this.CDRetracement = cDRetracement;
+	}
+
+	public ArrayList<ABCDPatternRetracementLevels> getRetracementList() {
+		return this.retracementList;
+	}
+
+	public Float getExpectedDPoint(Float bPoint, Float cPoint, Float cDRetracement) {
+		float BC = bPoint - cPoint;
+		return cPoint + BC * cDRetracement;
+	}
+
+	public Float getExpectedCPoint(Float a, Float b, Float bCRetracement) {
+		return b - a * bCRetracement;
+	}
+}
